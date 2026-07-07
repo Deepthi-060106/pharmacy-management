@@ -40,3 +40,84 @@ Running a pharmacy means juggling customer records, prescriptions, stock levels,
 **Database:** MySQL
 
 ## 🗂️ Project Structure
+## 🔌 API Endpoints
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/api/admin/register` | — | Register a new admin |
+| POST | `/api/admin/login` | — | Log in, returns JWT |
+| GET | `/api/customers` | Admin | List all customers |
+| POST | `/api/customers` | Admin | Add a customer |
+| GET | `/api/medicines` | JWT | List all medicines |
+| POST | `/api/medicines` | Admin | Add a medicine |
+| GET | `/api/prescriptions` | Admin | List prescriptions with linked medicines |
+| POST | `/api/prescriptions` | Admin | Create a prescription (with medicines + dosage) |
+| POST | `/api/sales` | Admin | Record a sale, deducts stock automatically |
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.9+
+- Node.js 16+
+- MySQL Server
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/Deepthi-060106/pharmacy-management.git
+cd pharmacy-management
+```
+
+### 2. Set up the database
+```bash
+mysql -u root -p < DatabaseSchema.sql
+mysql -u root -p < Insert_values.sql   # optional sample data
+```
+
+### 3. Backend setup
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+```
+Edit `.env` with your real MySQL credentials and a strong JWT secret, then run:
+```bash
+python app.py
+```
+The API will be live at `http://127.0.0.1:5000`.
+
+### 4. Frontend setup
+```bash
+cd Frontend
+npm install
+cp .env.example .env
+```
+Edit `.env` if your backend isn't running on the default local port, then run:
+```bash
+npm start
+```
+The app will be live at `http://localhost:3000`.
+
+## ☁️ Deployment
+
+- **Frontend** is deployed on **Vercel**: [pharmacy-managament.vercel.app](https://pharmacy-managament.vercel.app)
+- **Backend**: Vercel is built for serverless functions, not a great fit for a long-running Flask app with a background scheduler and a persistent MySQL connection. Better options are **Render**, **Railway**, or a small VPS. Whichever you choose:
+  1. Set the environment variables from `.env.example` (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `JWT_SECRET_KEY`) in that platform's dashboard.
+  2. Use a managed MySQL instance (Railway, PlanetScale, or your host's MySQL add-on) rather than `localhost`.
+  3. Once deployed, set `REACT_APP_API_URL` in your Vercel project's environment variables to point at the live backend URL, then redeploy the frontend.
+
+## 🔒 Security Notes
+
+- Database credentials and the JWT secret are read from environment variables (`.env`, git-ignored) rather than hardcoded — **make sure you never commit a real `.env` file**.
+- Admin passwords are currently stored in plain text in the `Admins` table (see `Insert_values.sql`). For any real-world use, hash passwords with `bcrypt` or `werkzeug.security` before storing and comparing them.
+- `JWT_SECRET_KEY` should be a long, random string in production — never reuse the example value.
+
+## 🔮 Future Improvements
+
+- Hash admin passwords instead of storing them in plain text
+- Add pagination and search/filtering on inventory and customer lists
+- Role-based access beyond admin/non-admin (e.g. pharmacist, cashier)
+- Deploy the backend and connect it to the live Vercel frontend
+- Add automated tests for API routes
+
+## 📄 License
+
+This project is open for learning and personal use. Feel free to fork and build on it — attribution appreciated.
